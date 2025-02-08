@@ -3,5 +3,25 @@
 version = 4
 
 [[package]]
-name = "smart_pointers"
+name = "box_smart_pointer"
+version = "0.1.0"
+
+[[package]]
+name = "deref_trait"
+version = "0.1.0"
+
+[[package]]
+name = "drop_trait"
+version = "0.1.0"
+
+[[package]]
+name = "interior_mutability"
+version = "0.1.0"
+
+[[package]]
+name = "reference_counting"
+version = "0.1.0"
+
+[[package]]
+name = "reference_cycles"
 version = "0.1.0"

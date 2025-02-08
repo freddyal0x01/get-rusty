@@ -1,6 +1,3 @@
-[package]
-name = "smart_pointers"
-version = "0.1.0"
-edition = "2021"
+[workspace]
 
-[dependencies]
+members = ["box_smart_pointer", "deref_trait", "drop_trait", "interior_mutability", "reference_counting", "reference_cycles"]
