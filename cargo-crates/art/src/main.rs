@@ -1,5 +1,5 @@
-use art::mix;
-use art::PrimaryColor;
+use freddyal_art::mix;
+use freddyal_art::PrimaryColor;
 
 fn main() {
     let red = PrimaryColor::Red;
