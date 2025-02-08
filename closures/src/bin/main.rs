@@ -11,7 +11,8 @@
 // Closures are typically short and relevant only within a narrow context rather than in any arbitrary scenario.
 // Within these limited contexts, the compiler can infer the types of the parameters and the return type, similar to how it’s able to infer the types of most variables (there are rare cases where the compiler needs closure type annotations too).
 
-use std::{thread, time::Duration};
+use std::hash::Hash;
+use std::{collections::HashMap, thread, time::Duration};
 
 fn main() {
     let simulated_intensity = 30;
@@ -23,12 +24,14 @@ fn main() {
 // In order to define structs, enums, fn parameters that use closures,
 // we need to use generics and trait bounds.
 // 3 closure traits: Fn, FnMut, FnOnce
-struct Cacher<T>
+struct Cacher<T, K, V>
 where
-    T: Fn(u32) -> u32,
+    T: Fn(K) -> V,
+    K: Eq + Hash + Clone,
+    V: Clone,
 {
     calculation: T,
-    value: Option<u32>,
+    values: HashMap<K, V>,
 }
 
 // caching values is a useful behavior, however we can't use it under different context
@@ -50,25 +53,26 @@ where
 
 // Solution: We can use generics instead of hardcoded values
 
-impl<T> Cacher<T>
+impl<T, K, V> Cacher<T, K, V>
 where
-    T: Fn(u32) -> u32,
+    T: Fn(K) -> V,
+    K: Eq + Hash + Clone,
+    V: Clone,
 {
-    fn new(calculation: T) -> Cacher<T> {
+    fn new(calculation: T) -> Cacher<T, K, V> {
         Cacher {
             calculation,
-            value: None,
+            values: HashMap::new(),
         }
     }
 
-    fn value(&mut self, arg: u32) -> u32 {
-        match self.value {
-            Some(v) => v,
-            None => {
-                let v = (self.calculation)(arg);
-                self.value = Some(v);
-                v
-            }
+    fn value(&mut self, arg: K) -> V {
+        if let Some(v) = self.values.get(&arg) {
+            v.clone()
+        } else {
+            let v = (self.calculation)(arg.clone());
+            self.values.insert(arg.clone(), v.clone());
+            v
         }
     }
 }
