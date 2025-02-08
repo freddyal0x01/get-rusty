@@ -38,7 +38,7 @@ where
 // 1. Calling our value method is going to return the same value no matter what the arg input parameter is.
 
 // Solution: Cache one value for each argument being passed in, fix the implementation by
-// storing a hashmap instead of a single value. the ktys of the hashmap are the keys to the
+// storing a hashmap instead of a single value. the keys of the hashmap are the keys to the
 // argument passed into the value and the hashmap values will be the result of calling the
 // the closure with the argument.
 // Inside the value method body, we'll need to look up the arg inside the hashmap and if the
