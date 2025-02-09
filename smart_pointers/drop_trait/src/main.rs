@@ -1,3 +1,22 @@
+// The drop can be implemented on any type and it lets you customimze what happens when a value is about to go out of scope.
+// The drop trait is almost always used when implementing smart pointers
+
+struct CustomSmartPointer {
+    data: String,
+}
+
+impl Drop for CustomSmartPointer {
+    fn drop(&mut self) {
+        println!("Dropping CustomSmartPointer with data `{}`!", self.data);
+    }
+}
+
 fn main() {
-    println!("Hello, world!");
+    let c = CustomSmartPointer {
+        data: String::from("my stuff"),
+    };
+    let d = CustomSmartPointer {
+        data: String::from("other stuff"),
+    };
+    println!("CustomSmartPointers created.");
 }
