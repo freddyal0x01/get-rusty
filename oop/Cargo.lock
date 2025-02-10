@@ -3,5 +3,13 @@
 version = 4
 
 [[package]]
-name = "oop"
+name = "fundamentals"
+version = "0.1.0"
+
+[[package]]
+name = "state_design"
+version = "0.1.0"
+
+[[package]]
+name = "trait_objects"
 version = "0.1.0"
