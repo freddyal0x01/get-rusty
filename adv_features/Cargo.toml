@@ -1,3 +1,3 @@
 [workspace]
 
-members = ["fn_closures", "macros", "traits", "types", "unsafe_rust"]
+members = ["fn_closures", "traits", "types", "unsafe_rust", "macros", "macros/procedural_macros/hello_macro", "macros/procedural_macros/hello_macro_derive",]
