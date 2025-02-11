@@ -12,7 +12,7 @@ macro_rules! vec {
     };
 }
 
-// What $()* looks like  
+// What $()* looks like
 
 {
     let mut temp_vec = Vec::new();
