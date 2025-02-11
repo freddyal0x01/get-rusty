@@ -167,10 +167,12 @@ trait OutlinePrint: fmt::Display {
 
 ## Newtype Pattern
 
-The _newtype pattern_ allows us to create a new type in a tuple struct.The tuple
-struct will have one field and be a thin wrapper around the type we want to
-implement a trait for. Then the wrapper type is local to our crate, and we can
-implement the trait on the wrapper.
+The orphan rule states that we’re only allowed to implement a trait on a type if
+either the trait or the type are local to our crate. It’s possible to get around
+this restriction using the _newtype pattern_, which involves creating a new type
+in a tuple struct. The tuple struct will have one field and be a thin wrapper
+around the type we want to implement a trait for. Then the wrapper type is local
+to our crate, and we can implement the trait on the wrapper.
 
 Example Code: Creatinmg a `Wrapper` type around `Vec<String>` to implement
 `Display`
