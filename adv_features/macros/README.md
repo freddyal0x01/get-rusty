@@ -61,3 +61,115 @@ The comma following `$()` indicates that a literal comma separator character cou
 
 # Procedural Macros for Generating Code from Attributes
 
+Procedural macros act more like a function (and is a type of procedure). Procedural macros accept some code as an input, operate on that code, and produce some code as an output rather than matching against patterns and replacing the code with other code as declarative macros do.
+
+There are 3 kinds of procedural macros and they all work in a similar fashion: 
+
+1. custom derive
+2. attribute-like
+3. function-like
+
+When creating procedural macros, the definitions must reside in their own crate with a special crate type. This is for complex technical reasons that we hope to eliminate in the future.
+
+Example: How to define a procedural macro
+
+```rust
+use proc_macro;
+
+#[some_attribute]
+pub fn some_name(input: TokenStream) -> TokenStream {
+}
+```
+
+Tokens are the smallest individual elements of a program, they can represent keywords, identifiers, operators, separators, or literals. The function must have an attribute which specifies the kind of procedural macro we're creating.
+
+## How to write a Custom `derive` Macro
+
+Example Steps: 
+1. Create a crate named `hello_macro` that defines a trait named `HelloMacro` with one associated function named `hello_macro`.
+   - `cargo new hello_macro --lib`
+2. Provide a procedural macro so users can annotate their type with `#[derive(HelloMacro)]` to get a default implementation of the `hello_macro` function.
+   - Define a procedural macro: `cargo new hello_macro_derive --lib`. Procedural macros need to be in their own crate. 
+
+The default implementation will print `Hello, Macro! My name is TypeName!` where `TypeName` is the name of the type on which this trait has been defined. 
+
+Example code using the created procedural macro
+
+```rust
+use hello_macro::HelloMacro;
+
+struct Pancakes;
+
+impl HelloMacro for Pancakes {
+    fn hello_macro() {
+        println!("Hello, Macro! My name is Pancakes!");
+    }
+}
+
+fn main() {
+    Pancakes::hello_macro();
+}
+```
+
+When creating a procedural macro the convention for structuring crates and macro crates is as follows: for a crate named `foo`, a custom derive procedural macro crate is called `foo_derive`.
+
+
+We need to declare the `hello_macro_derive` crate as a procedural macro crate. We’ll also need functionality from the `syn` and `quote` crates, we need to add them as dependencies. 
+
+Add this under the Cargo.toml
+
+```toml
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = "2.0"
+quote = "1.0"
+```
+
+When define the procedural macro, the code won't compile until we add a definition for the `impl_hello_macro` function.
+
+## Attribute-like macros
+
+Attribute-like macros are similar to custom derive macros, but instead of generating code for the `derive` attribute, they allow you to create new attributes. *They’re also more flexible: `derive` only works for structs and enums; attributes can be applied to other items as well, such as functions.*
+
+Code example using an attribute-like macro: We have an attribute named 'route' that annotates functions when using a web app framework. 
+
+```rust
+#[route(GET, "/")]
+fn index() {}
+```
+
+The `#[route]` attribute would be defined by the framework as a procedural macro. The signature would look like this: 
+
+```rust
+#[proc_macro_attribute]
+pub fn route(attr: TokenStream, item: TokenStream) -> TokenStream {}
+```
+
+Here, we have two parameters of type `TokenStream`. The first is for the contents of the attribute: the `GET, "/"` part. The second is the body of the item the attribute is attached to: in this case, `fn index() {}` and the rest of the function’s body.
+
+Other than that, attribute-like macros work the same way as custom derive macros: yweou create a crate with the `proc-macro` crate type and implement a function that generates the code you want.
+
+
+## Function-like macros
+
+Function-like macros define macros that look like function calls. Similarly to `macro_rules!` macros, they’re more flexible than functions. Example: they can take an unknown number of arguments. However, `macro_rules!` macros can be defined only using the match-like syntax
+
+Function-like macros take a `TokenStream` parameter and their definition manipulates that `TokenStream` using Rust code as the other two types of procedural macros do.
+
+Code Example: function-like macros is a `sql!` macro that might be called like a function.
+
+```rust
+let sql = sql!(SELECT * FROM posts WHERE id=1);
+```
+
+This macro would parse the SQL statement inside it and check that it’s syntactically correct, which is much more complex processing than a `macro_rules!` macro can do. 
+
+The `sql!` macro would be defined like this:
+
+```rust
+#[proc_macro]
+pub fn sql(input: TokenStream) -> TokenStream {}
+```
+This definition is similar to the custom derive macro’s signature: we receive the tokens that are inside the parentheses and return the code we wanted to generate.
